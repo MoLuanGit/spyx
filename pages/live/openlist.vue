@@ -126,6 +126,7 @@
 		.title{
 			color: #fff;
 			font-size: 36rpx;
+			line-height: 61px;
 			font-weight: bold;
 		}
 	}

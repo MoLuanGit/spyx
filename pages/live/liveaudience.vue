@@ -166,19 +166,24 @@
 		    webimhandler.logout()
 		},
 		onReady: function() {
-		    this.ctx = wx.createLivePlayerContext('player')
+			// #ifdef MP
+		    this.ctx = uni.createLivePlayerContext('player')
+			// #endif
 		},
 		onShow: function() {
-		    uni.setKeepScreenOn({
-		        keepScreenOn: true
-		    })
+			// #ifdef MP
+			//保持常亮状态
+			uni.setKeepScreenOn({
+			    keepScreenOn: true
+			})
+			// #endif
 		},
 		methods:{
 			prepareData(data){
 			    let self = this;
 				this.initchunk = data;
 				getusersig().then(res => {
-				    let initchunk = self.data.initchunk
+				    let initchunk = self.initchunk
 				    let {
 				        data,
 				        status
@@ -209,7 +214,7 @@
 			//发送消息
 			bindConfirm: function(e) {
 			    var _this = this;
-			    var content = this.data.msgContent;
+			    var content = this.msgContent;
 			    if (!content.replace(/^\s*|\s*$/g, '')) return
 			    webimhandler.onSendMsg(content, function() {
 			        _this.clearInput();
@@ -240,7 +245,7 @@
 			//消息数据处理
 			receiveMsgs: function(data) {
 			    console.log('receiveMsgs', data);
-			    var msgs = this.data.msgs || [];
+			    var msgs = this.msgs || [];
 			    msgs.push(data);
 			    //最多展示20条信息
 			    if (msgs.length > 20) {
@@ -278,8 +283,8 @@
 			//初始化IM
 			initIM: function() {
 			    var that = this;
-			    var avChatRoomId = that.data.avChatRoomId; //聊天群ID
-			    var sdkappid = that.data.sdkappid; //创建通讯云通信获取到的sdkappid
+			    var avChatRoomId = that.avChatRoomId; //聊天群ID
+			    var sdkappid = that.sdkappid; //创建通讯云通信获取到的sdkappid
 			
 			    //初始化信息
 			    webimhandler.init({
@@ -297,9 +302,9 @@
 			        'sdkAppID': sdkappid, //用户所属应用id,必填
 			        'appIDAt3rd': sdkappid, //用户所属应用id，必填
 			        'accountType': 1, // 已废弃
-			        'identifier': that.data.identifier, //当前用户ID,必须是否字符串类型，选填
-			        'identifierNick': that.data.nickName || '', //当前用户昵称，选填
-			        'userSig': that.data.userSig, //当前用户身份凭证，必须是字符串类型，选填
+			        'identifier': that.identifier, //当前用户ID,必须是否字符串类型，选填
+			        'identifierNick': that.nickName || '', //当前用户昵称，选填
+			        'userSig': that.userSig, //当前用户身份凭证，必须是字符串类型，选填
 			    };
 			
 			    // 监听群被解散，退出直播间 

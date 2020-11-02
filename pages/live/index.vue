@@ -164,7 +164,7 @@
 			messagehandle(e) {
 			    var self = this;
 			    // console.log(e);return;
-			    if (!this.data.livelistdata.template_id){
+			    if (!this.livelistdata.template_id){
 					uni.showToast({
 						title: '未配置订阅模板，请联系管理员',
 						icon: 'none',
@@ -173,7 +173,7 @@
 					return;
 			    }
 			    uni.requestSubscribeMessage({
-			        tmplIds: [this.data.livelistdata.template_id],
+			        tmplIds: [this.livelistdata.template_id],
 			        success(res) {
 			            let channelid = e.currentTarget.dataset['channelid'];
 			

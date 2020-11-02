@@ -8,7 +8,7 @@
 			</view>
 		</view>
 		<view class="container">
-			
+			<!-- #ifdef MP -->
 			<live-pusher
 			  :url="initchunk['push_url']"
 			  mode="RTC"
@@ -19,6 +19,7 @@
 			  @error = "errorhandle"
 			  id="pusher"
 			/>
+			<!-- #endif -->
 			
 			<view class="roomrttop">
 			  <image :src="initchunk['avatar']" class="icon-user"></image>
@@ -40,7 +41,7 @@
 			</view>
 			
 			
-			<view class="operawrap" :style="{bottom:keyboard_height ? keyboard_height+'px':"10"+'px'}">
+			<view class="operawrap" :style="{bottom:keyboard_height ? keyboard_height+'px':10+'px'}">
 			  <scroll-view :scroll-into-view="'chat'+msgs.length" class="msgswrap" scroll-y>
 			    <view class="tips">喜欢主播点赞哦，加购TA推荐的好货!智联绿色直播，禁止低俗、引诱、暴露等一切黄赌毒内容，警察叔叔24小时巡查哦！！！</view>
 			    <view class="msgs-wrapper">
@@ -71,13 +72,13 @@
 			
 			<view class="goodswrap" :class="isshopbag ? 'on':''">
 			  <view class="top flex">
-			    <view class="tit">共{{initchunk['goods']['count']}}件商品</view>
+			    <view class="tit">共{{initchunk['goods'] && initchunk['goods']['count']}}件商品</view>
 			    <view @click="shopbagclose" class="iconfont icon-guanbi"></view>
 			  </view>
 			  
 			  <view class="goodsscroll">
 			    <scroll-view style="height:300px" :scroll-into-view="'chat'+msgs.length" scroll-y>
-			      <view v-for="(item,index) in initchunk['goods']['list']" :key="index" class="item">
+			      <view v-for="(item,index) in (initchunk['goods'] && initchunk['goods']['list'])" :key="index" class="item">
 			        <view class="picwrap">
 			          <image class="pic" :src="item['image']"></image>
 			          <view class="order">{{index+1}}</view>
@@ -149,19 +150,26 @@
 				isshopbag: false,
 				holdkeyboard: true,
 				ctx:null,
+				keyboard_height:'',
 			};
 		},
 		onReady: function() {
-		    this.ctx = wx.createLivePusherContext('pusher')
+			// #ifdef MP
+			this.ctx = uni.createLivePusherContext('pusher')
+			// #endif
+		    
 		},
 		onLoad: function(options) {
 		    options['channel_id'] && this.initdata(options['channel_id'])
 		},
 		onShow: function() {
-		    //保持常亮状态
-		    uni.setKeepScreenOn({
-		        keepScreenOn: true
-		    })
+		    
+			// #ifdef MP
+			//保持常亮状态
+			uni.setKeepScreenOn({
+			    keepScreenOn: true
+			})
+			// #endif
 		},
 		methods:{
 			initdata(id) {
@@ -184,7 +192,7 @@
 			//发送消息
 			bindConfirm: function(e) {
 			    var _this = this;
-			    var content = this.data.msgContent;
+			    var content = this.msgContent;
 			    if (!content.replace(/^\s*|\s*$/g, '')) return
 			    webimhandler.onSendMsg(content, function() {
 			        _this.clearInput();
@@ -212,7 +220,7 @@
 				this.isMsgContent = false;
 				this.holdkeyboard = false;
 				this.keyboard_height = 0;
-			    console.log("keyboard_height=", this.data.keyboard_height)
+			    console.log("keyboard_height=", this.keyboard_height)
 			},
 			focusmsgContentFocus(e) {
 			    // 输入框获取焦点, 通过软键盘高度设置输入框位置
@@ -232,7 +240,7 @@
 			//消息数据处理
 			receiveMsgs: function(data) {
 			    console.log('receiveMsgs', data);
-			    var msgs = this.data.msgs || [];
+			    var msgs = this.msgs || [];
 			    msgs.push(data);
 			    //最多展示20条信息
 			    if (msgs.length > 20) {
@@ -242,7 +250,7 @@
 				this.msgs = msgs;
 			},
 			beautyhandle() {
-			    let beauty = this.data.beauty;
+			    let beauty = this.beauty;
 			    if (beauty === 6) {
 			        beauty = 9
 			    } else {
@@ -291,7 +299,7 @@
 			    this.liveouthandle();
 			},
 			liveouthandle() {
-			    let initchunk = this.data.initchunk;
+			    let initchunk = this.initchunk;
 			    closechannel(initchunk['channel_id']).then(res => {
 			        uni.showToast({
 			            title: res.data.msg,
@@ -306,8 +314,8 @@
 			    })
 			},
 			shopbaghandle() {
-			    let initchunk = this.data.initchunk;
-			    if (initchunk['goods']['list'].length == 0) {
+			    let initchunk = this.initchunk;
+			    if (initchunk['goods'] && initchunk['goods']['list'].length == 0) {
 					uni.showToast({
 						title: '推荐商品为空,请添加推荐产品！',
 						icon:'none',
@@ -328,8 +336,8 @@
 			//初始化IM
 			initIM: function() {
 			    var that = this;
-			    var avChatRoomId = that.data.avChatRoomId; //聊天群ID
-			    var sdkappid = that.data.sdkappid; //创建通讯云通信获取到的sdkappid
+			    var avChatRoomId = that.avChatRoomId; //聊天群ID
+			    var sdkappid = that.sdkappid; //创建通讯云通信获取到的sdkappid
 			
 			    //初始化信息
 			    webimhandler.init({
@@ -347,9 +355,9 @@
 			        'sdkAppID': sdkappid, //用户所属应用id,必填
 			        'appIDAt3rd': sdkappid, //用户所属应用id，必填
 			        'accountType': 1, // 已废弃
-			        'identifier': that.data.identifier, //当前用户ID,必须是否字符串类型，选填
-			        'identifierNick': that.data.nickName || '', //当前用户昵称，选填
-			        'userSig': that.data.userSig, //当前用户身份凭证，必须是字符串类型，选填
+			        'identifier': that.identifier, //当前用户ID,必须是否字符串类型，选填
+			        'identifierNick': that.nickName || '', //当前用户昵称，选填
+			        'userSig': that.userSig, //当前用户身份凭证，必须是字符串类型，选填
 			    };
 			
 			    // 监听群被解散，退出直播间 

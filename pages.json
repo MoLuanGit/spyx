@@ -78,7 +78,7 @@
 			}
 		},
 		{
-			"path": "pages/live/liveopen",
+			"path": "pages/live/liveaudience",
 			"style": {
 				"navigationBarTitleText": "超级购物台",
 				"navigationStyle": "custom",

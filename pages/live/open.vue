@@ -33,7 +33,9 @@
 			        <button class='evaluateBnt' formType="submit">立即直播</button>
 			    </view>
 			</form>
+			<!-- #ifdef MP -->
 			<authorize bind:onLoadFun="onLoadFun" ></authorize>
+			<!-- #endif -->
 		</view>
 	</view>
 </template>
@@ -57,7 +59,6 @@
 		data() {
 			return {
 				title:'我要开直播',
-				title: '',
 				cover: null,
 				goodslists: ''
 			};
@@ -122,7 +123,7 @@
 					duration: 2000
 				});
 			    // console.log(value.title);
-			    if (!this.data.cover) return uni.showToast({
+			    if (!this.cover) return uni.showToast({
 					title: '请上传一张封面！',
 					icon: 'none',
 					duration: 2000
@@ -131,7 +132,7 @@
 			    uni.showLoading({
 			        title: "正在开启直播……"
 			    });
-			    value.cover_url = this.data.cover;
+			    value.cover_url = this.cover;
 			    openChannel(value).then(res => {
 			        uni.hideLoading();
 			        uni.redirectTo({
@@ -164,6 +165,7 @@
 		.title{
 			color: #fff;
 			font-size: 36rpx;
+			line-height: 61px;
 			font-weight: bold;
 		}
 	}
