@@ -37,26 +37,7 @@
 				"navigationBarTitleText": "商品分类"
 			}
 		},
-		{
-			"path": "pages/live/index",
-			"style": {
-				"navigationBarTitleText": "超级购物台",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"scrollIndicator": false //禁用原生导航栏
-				}
-			}
-		},
-		{
-			"path": "pages/live/liveaudience",
-			"style": {
-				"navigationBarTitleText": "超级购物台",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"scrollIndicator": false //禁用原生导航栏
-				}
-			}
-		},
+		
 		{
 			"path": "pages/retrieve_password/index",
 			"style": {
@@ -501,6 +482,32 @@
 						"path": "order_cancellation/index",
 						"style": {
 							"navigationBarTitleText": "订单核销"
+						}
+					}
+				]
+			},
+			{
+				"root": "pages/live",
+				"name": "live",
+				"pages":[
+					{
+						"path": "index",
+						"style": {
+							"navigationBarTitleText": "超级购物台",
+							"navigationStyle": "custom",
+							"app-plus": {
+								"scrollIndicator": false //禁用原生导航栏
+							}
+						}
+					},
+					{
+						"path": "liveaudience",
+						"style": {
+							"navigationBarTitleText": "超级购物台",
+							"navigationStyle": "custom",
+							"app-plus": {
+								"scrollIndicator": false //禁用原生导航栏
+							}
 						}
 					}
 				]
