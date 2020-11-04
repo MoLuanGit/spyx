@@ -131,13 +131,6 @@
 				<view class="iconfont icon-xiangyou"></view>
 			</button>
 			<!-- #endif -->
-			<navigator class="item" url="/pages/live/openlist" hover-class="none" v-if="item.url!='#' && item.url!='/pages/service/index'">
-				<view class="left">
-					<image src="/static/images/user_menu08.png"></image>
-					<text>我要开播</text>
-				</view>
-				<view class="iconfont icon-xiangyou"></view>
-			</navigator>
 		</view>
 		<img src="/static/images/support.png" alt="" class='support'>
 		<view style="height: 50rpx;"></view>

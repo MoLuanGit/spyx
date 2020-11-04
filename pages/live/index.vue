@@ -16,7 +16,7 @@
 			    class="swiper-box">
 			    <block v-for="(item,index) in livelistdata['banner_list']" :key="index">
 			      <swiper-item
-			        bindtap="bannerurlhandle"
+			        @click="bannerurlhandle"
 			        :data-url="item['url']"
 			        class="swiperitemwrap">
 			        <image :src="item['image']" class="pic-swiper"/>
@@ -163,6 +163,7 @@
 			// 订阅
 			messagehandle(e) {
 			    var self = this;
+				
 			    // console.log(e);return;
 			    if (!this.livelistdata.template_id){
 					uni.showToast({
@@ -223,7 +224,7 @@
 <style lang="scss">
 	.navbar{
 		text-align: center;
-		height: 61px;
+		height: 64px;
 		position: fixed;
 		background-color: #fff;
 		top: 0;
@@ -234,12 +235,12 @@
 		.title{
 			color: #fff;
 			font-size: 36rpx;
-			line-height: 61px;
+			line-height: 64px;
 			font-weight: bold;
 		}
 	}
 	.container{
-		padding-top: 61px;
+		padding-top: 64px;
 	}
 	page{
 	  background-color: #DF828C !important;

@@ -56,12 +56,13 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx6ca9ac1a01f617a1",
+        "appid" : "wx0d517c2009070272",
         "setting" : {
             "urlCheck" : false,
             "minified" : true,
             "postcss" : true,
-            "es6" : true
+            "es6" : true,
+			"optimization":{"subPackages":true}
         },
         "permission" : {
             "scope.userLocation" : {
@@ -97,9 +98,9 @@
         },
         "title" : "CRMEB"
     },
-	"plus": {  
-	    "statusbar": {  
-	        "immersed": true  
-	    }  
-	}
+    "plus" : {
+        "statusbar" : {
+            "immersed" : true
+        }
+    }
 }

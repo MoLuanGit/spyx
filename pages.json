@@ -48,36 +48,6 @@
 			}
 		},
 		{
-			"path": "pages/live/openlist",
-			"style": {
-				"navigationBarTitleText": "我要开播",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"scrollIndicator": false //禁用原生导航栏
-				}
-			}
-		},
-		{
-			"path": "pages/live/open",
-			"style": {
-				"navigationBarTitleText": "开播",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"scrollIndicator": false //禁用原生导航栏
-				}
-			}
-		},
-		{
-			"path": "pages/live/liveopen",
-			"style": {
-				"navigationBarTitleText": "正在直播中",
-				"navigationStyle": "custom",
-				"app-plus": {
-					"scrollIndicator": false //禁用原生导航栏
-				}
-			}
-		},
-		{
 			"path": "pages/live/liveaudience",
 			"style": {
 				"navigationBarTitleText": "超级购物台",

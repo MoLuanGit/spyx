@@ -395,7 +395,7 @@
 	
 	.navbar{
 		text-align: center;
-		height: 61px;
+		height: 64px;
 		position: fixed;
 		background-color: #fff;
 		top: 0;
@@ -406,13 +406,13 @@
 		.title{
 			color: #fff;
 			font-size: 36rpx;
-			line-height: 61px;
+			line-height: 64px;
 			font-weight: bold;
 		}
 	}
 		
 	.container{
-		padding-top: 61px;
+		padding-top: 64px;
 	}
 	page{
 	  background-color: #DF828C !important;
