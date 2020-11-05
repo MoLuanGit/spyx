@@ -31,12 +31,12 @@
 			
 			  <view 
 			    v-for="(item,index) in livelistdata['living_list']" :key="index" 
-			    :data-index="index"
+			    :data-id="item.id"
 			    @click="liveaudience"
 			    class="onlivewrap"
 				:class="index != livelistdata['living_list'].length - 1 ? 'm-b30':''">
 			    <view class="p-relative">
-			      <image class="pic-goods" :src="item.cover"></image>
+			      <image class="pic-goods" :src="item.cover_img"></image>
 			      <view class="tag">
 			        <image class="icon-onlive" src="/static/images/onlive.png"></image>
 			        <text class="text">直播中</text>
@@ -55,12 +55,12 @@
 			    </view>
 			    <view class="conwrap">
 			      <view class="tit">{{item.title}}</view>
-			      <view class="desc">{{item.employee.nickname}}</view>
+			      <view class="desc">{{item.anchor_name}}</view>
 			      <view class="pic-wrap">
 			        <block 
-			          v-for="(item,idx) in item['goods']['list']" 
-			          :key="index+''+idx">
-			          <image v-if="idx<2" class="pic-small" :src="item.image"></image>
+			          v-for="(item,idx) in item['channel_products']" 
+			          :key="idx">
+			          <image v-if="idx<2" class="pic-small" :src="item.cover_img"></image>
 			        </block>
 			        
 			        <view class="pic-small-tips">
@@ -73,9 +73,9 @@
 			
 			  <view class="listtitle">即将开播</view>
 			
-			  <view v-for="(item,index) in livelistdata['subscribe_list']" :key="0+''+index" class="onlivewrap m-b30">
+			  <view v-for="(item,index) in livelistdata['subscribe_list']" :key="index" class="onlivewrap m-b30">
 			    <view class="p-relative">
-			      <image class="pic-goods" :src="item.cover"></image>
+			      <image class="pic-goods" :src="item.cover_img"></image>
 			      <view class="tag">
 			        <image class="icon-onlive" src="/static/images/yugao.png"></image>
 			        <text class="text">预告</text>
@@ -83,9 +83,9 @@
 			    </view>
 			    <view class="conwrap">
 			      <view class="tit">{{item.title}}</view>
-			      <view class="desc">{{item.employee.nickname}}</view>
-			      <view class="kaibo-time">{{item.open_time}}</view>
-			      <view :data-channelid= "item['channel_id']" @click="messagehandle" class="kaibo-btn" :data-index="index" v-if="item['is_subscribe']==0">开播提醒</view>
+			      <view class="desc">{{item.anchor_name}}</view>
+			      <view class="kaibo-time">{{item.start_time}}</view>
+			      <view :data-channelid= "item['id']" @click="messagehandle" class="kaibo-btn" :data-index="index" v-if="item['is_subscribe']==0">开播提醒</view>
 			      <view class="kaibo-btn" :data-index="index" v-else>已订阅</view>
 			    </view>
 			  </view>
@@ -105,9 +105,6 @@
 	    livelist,
 	    messagetips
 	} from "../../api/live.js";
-	import {
-		getLiveList
-	} from '@/api/api.js';
 	import {
 		mapGetters
 	} from "vuex";
@@ -131,71 +128,71 @@
 				isShowAuth: false,
 				isAuto: false,
 				livelistdata: {
-					"banner_list":[
-						{
-							"image":'/static/images/bargainBg.jpg',
-							'url':'pages/index/index',
-						},
-						{
-							"image":'/static/images/bargainBg.jpg',
-						},
-					],
-					'living_list':[
-						{
-							'cover':'/static/images/bargainBg.jpg',
-							'title':'冬日温暖，贴身舒适',
-							'employee':{
-								'nickname':'直播柚子酱'
-							},
-							'goods':{
-								list:[{
-									'image':'/static/images/address.png'
-								},
-								{
-									'image':'/static/images/address.png'
-								}],
-								count:23
-							}
-						},
-						{
-							'cover':'/static/images/bargainBg.jpg',
-							'title':'冬日温暖，贴身舒适',
-							'employee':{
-								'nickname':'直播柚子酱'
-							},
-							'goods':{
-								list:[{
-									'image':'/static/images/address.png'
-								}],
-								count:23
-							}
-						},
-					],
-					'subscribe_list':[
-						{
-							'cover':'/static/images/bargainBg.jpg',
-							"title":'高端品牌专场-买手推荐',
-							'employee':{
-								'nickname':'直播公子李'
-							},
-							'open_time':'3月20日  10:00开播',
-							'is_subscribe':0,
-							'channel_id':1,
-						},
-						{
-							'cover':'/static/images/bargainBg.jpg',
-							"title":'高端品牌专场-买手推荐',
-							'employee':{
-								'nickname':'直播公子李'
-							},
-							'open_time':'3月20日  10:00开播',
-							'is_subscribe':1,
-						},
-					],
+					// "banner_list":[
+					// 	{
+					// 		"image":'/static/images/bargainBg.jpg',
+					// 		'url':'pages/index/index',
+					// 	},
+					// 	{
+					// 		"image":'/static/images/bargainBg.jpg',
+					// 	},
+					// ],
+					// 'living_list':[
+					// 	{
+					// 		'cover':'/static/images/bargainBg.jpg',
+					// 		'title':'冬日温暖，贴身舒适',
+					// 		'employee':{
+					// 			'nickname':'直播柚子酱'
+					// 		},
+					// 		'goods':{
+					// 			list:[{
+					// 				'image':'/static/images/address.png'
+					// 			},
+					// 			{
+					// 				'image':'/static/images/address.png'
+					// 			}],
+					// 			count:23
+					// 		}
+					// 	},
+					// 	{
+					// 		'cover':'/static/images/bargainBg.jpg',
+					// 		'title':'冬日温暖，贴身舒适',
+					// 		'employee':{
+					// 			'nickname':'直播柚子酱'
+					// 		},
+					// 		'goods':{
+					// 			list:[{
+					// 				'image':'/static/images/address.png'
+					// 			}],
+					// 			count:23
+					// 		}
+					// 	},
+					// ],
+					// 'subscribe_list':[
+					// 	{
+					// 		'cover':'/static/images/bargainBg.jpg',
+					// 		"title":'高端品牌专场-买手推荐',
+					// 		'employee':{
+					// 			'nickname':'直播公子李'
+					// 		},
+					// 		'open_time':'3月20日  10:00开播',
+					// 		'is_subscribe':0,
+					// 		'channel_id':1,
+					// 	},
+					// 	{
+					// 		'cover':'/static/images/bargainBg.jpg',
+					// 		"title":'高端品牌专场-买手推荐',
+					// 		'employee':{
+					// 			'nickname':'直播公子李'
+					// 		},
+					// 		'open_time':'3月20日  10:00开播',
+					// 		'is_subscribe':1,
+					// 	},
+					// ],
 				},
-				page:1,
-				limit:10,
-				isScroll:true,
+				// page:1,
+				// limit:10,
+				// isScroll:true,
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -208,23 +205,25 @@
 		methods:{
 			// 直播
 			getlivelist() {
-				if(!this.isScroll) return
-				getLiveList(this.page, this.limit)
+				// if(!this.isScroll) return
+				console.log('111')
+				livelist(this.page, this.limit)
 					.then(res => {
-						this.isScroll = res.data.length>=this.limit
-						this.page++
-						this.livelistdata =this.livelistdata.concat(res.data);
+						console.log(res.data)
+						// this.isScroll = res.data.length>=this.limit
+						// this.page++
+						this.livelistdata = res.data
 					})
 					.catch(res => {
 						console.log(res.msg);
 					});
 			},
 			liveaudience(e) {
+			    let id = e.currentTarget.dataset['id']
 			    console.log(e);
-			    let index = e.currentTarget.dataset['index']
-				let detail = this.livelistdata.living_list[index]
+				
 			    uni.navigateTo({
-			        url: `/pages/live/liveaudience?detail=${encodeURIComponent(JSON.stringify(detail))}`
+			        url: `/pages/live/liveaudience?id=${id}`
 			    })
 			},
 			bannerurlhandle(e) {

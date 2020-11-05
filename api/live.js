@@ -27,18 +27,18 @@ export function closechannel(id) {
 
 /* 直播列表 */
 export function livelist() {
-  return request.get('live/list');
+  return request.get('channel/list');
 }
 /**
  * 观众获取直播详情
  */
 export function visitChannel(id) {
-    return request.get('live/visitchannel/' + id);
+    return request.get('channel/visit/' + id);
 }
 
 /* 观众获取User_Sig */
 export function getusersig() {
-  return request.get('live/getusersig');
+  return request.get('channel/getusersig');
 }
 
 /* 主播的预约直播 */
@@ -53,7 +53,10 @@ export function mygoods() {
 
 /* 订阅直播 */
 export function messagetips(id) {
-  return request.get('live/subscribechannel/' + id);
+  return request.get('channel/subscribe/' + id);
 }
 
-// 直播详情
+// 关注主播
+export function liveFocus(id){
+	return request.get('channel/focus/'+id)
+}

@@ -14,13 +14,16 @@
 		      @error="error" />
 		    <!-- 顶部信息 -->
 		    <view class="roomrttop">
-		      <image :src="initchunk['employee']['avatar']" class="icon-user"></image>
+		      <image :src="initchunk['anchor_img']" class="icon-user"></image>
 		      <view class="infor">
-		        <view class="name">{{initchunk['employee']['nickname']}}</view>
+		        <view class="name">{{initchunk['anchor_name']}}</view>
 		        <view class="num">1.6万本场点赞</view>
 		      </view>
-			  <view class="btn">
+			  <view class="btn" @click="toFocus" v-if="initchunk['is_focus'] == 0">
 			  	关注
+			  </view>
+			  <view class="btn" v-else>
+			  	已关注
 			  </view>
 		    </view>
 		    
@@ -29,9 +32,9 @@
 		</view>
 		
 		<!-- 底部信息 -->
-		<view class="commentareawrap" :style="{height:commentareaH+'px'}">
-		  <scroll-view :scroll-into-view="'chat'+msgs.length" scroll-y :style="{height:commentareaH+'px',paddingBottom:'60px'}">
-		    <view class="msgs-wrapper">
+		<view class="commentareawrap" :style="{height:commentareaH+60+'px'}">
+		  <scroll-view :scroll-into-view="'chat'+msgs.length" scroll-y :style="{height:commentareaH+'px'}" style="margin-bottom: 60px;">
+		    <view class="msgs-wrapper" >
 		      <view class="msgs" 
 		        v-for="(item,index) in msgs" 
 		        :key="index"
@@ -58,7 +61,7 @@
 		    	<view class="btn-car btn-car2">
 		    	  <image class="icon-car" src="/static/images/zanroom1.png"></image>
 		    	</view>
-		    	<view class="btn-car btn-car3">
+		    	<view class="btn-car btn-car3" @click="logout">
 		    	  <image class="icon-car" src="/static/images/cancel.png"></image>
 		    	</view>
 		    </view>
@@ -92,7 +95,7 @@
 			    :key="index"
 				:class="item.is_ing == 1?'active-bg':''">
 				<view class="img">
-					<image :src="item.image" class="goods-img"></image>
+					<image :src="item.cover_img" class="goods-img"></image>
 					<view class="is-ing" v-if="item.is_ing">
 						<image src="/static/images/is_ing.png" class="img1"></image>
 						<view class="">
@@ -102,14 +105,14 @@
 				</view>
 				<view class="info">
 					<view class="goodsname">
-						{{item.goodsname}}
+						{{item.name}}
 					</view>
 					<view class="bottom">
 						<view class="price">
 							<image src="/static/images/meiyuan.png" class="icon-price"></image>
 							{{item.price}}
 						</view>
-						<view class="btn">
+						<view class="btn" @click="toBuy(item.product_id)">
 							去抢购
 						</view>
 					</view>
@@ -125,7 +128,7 @@
 	var webimhandler = require('@/utils/wxim/webim_handler.js');
 	global.webim = webim;
 	import {
-	    getusersig, visitChannel
+	    getusersig, visitChannel,liveFocus
 	} from "../../api/live.js";
 	
 	export default {
@@ -134,48 +137,48 @@
 				goodsNums:24,
 				showGoodsList:0,
 				goodsLists:[
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':1,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':0,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':0,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':0,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':0,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':1,
-					},
-					{
-						'image':'/static/images/bargainBg.jpg',
-						'price':123.8,
-						'goodsname':'好波内衣女春夏新款无钢圈',
-						'is_ing':0,
-					},
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':1,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':0,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':0,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':0,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':0,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':1,
+					// },
+					// {
+					// 	'image':'/static/images/bargainBg.jpg',
+					// 	'price':123.8,
+					// 	'goodsname':'好波内衣女春夏新款无钢圈',
+					// 	'is_ing':0,
+					// },
 				],
 				title:'超级购物台',
 				commentareaH: 255, //下面高度
@@ -188,51 +191,51 @@
 				msgContent: "",
 				isMsgContent: false,
 				msgs: [
-					{
-						'fromAccountNick':'zs',
-						'content':'玩哈哈哈，哇哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈13哈哈哈哈哈哈',
-					},
-					{
-						'fromAccountNick':'ls',
-						'content':'22',
-					},
-					{
-						'fromAccountNick':'ww',
-						'content':'有意所哦和有三亚房价是阿斯顿法国红酒看来',
-					},
-					{
-						'fromAccountNick':'zs',
-						'content':'11',
-					},
-					{
-						'fromAccountNick':'ls',
-						'content':'22',
-					},
-					{
-						'fromAccountNick':'ww',
-						'content':'有意所以',
-					},
+					// {
+					// 	'fromAccountNick':'zs',
+					// 	'content':'玩哈哈哈，哇哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈13哈哈哈哈哈哈',
+					// },
+					// {
+					// 	'fromAccountNick':'ls',
+					// 	'content':'22',
+					// },
+					// {
+					// 	'fromAccountNick':'ww',
+					// 	'content':'有意所哦和有三亚房价是阿斯顿法国红酒看来',
+					// },
+					// {
+					// 	'fromAccountNick':'zs',
+					// 	'content':'11',
+					// },
+					// {
+					// 	'fromAccountNick':'ls',
+					// 	'content':'22',
+					// },
+					// {
+					// 	'fromAccountNick':'ww',
+					// 	'content':'有意所以',
+					// },
 				],
 				ctx:null,
 				initchunk:{
-					'cover':'/static/images/bargainBg.jpg',
-					'title':'冬日温暖，贴身舒适',
-					'play_url':[
-						'',
-					],
-					'employee':{
-						'nickname':'直播柚子酱',
-						'avatar':'/static/images/bargainBg.jpg',
-					},
-					'goods':{
-						list:[{
-							'image':'/static/images/address.png'
-						},
-						{
-							'image':'/static/images/address.png'
-						}],
-						count:23
-					}
+					// 'cover':'/static/images/bargainBg.jpg',
+					// 'title':'冬日温暖，贴身舒适',
+					// 'play_url':[
+					// 	'',
+					// ],
+					// 'employee':{
+					// 	'nickname':'直播柚子酱',
+					// 	'avatar':'/static/images/bargainBg.jpg',
+					// },
+					// 'goods':{
+					// 	list:[{
+					// 		'image':'/static/images/address.png'
+					// 	},
+					// 	{
+					// 		'image':'/static/images/address.png'
+					// 	}],
+					// 	count:23
+					// }
 				},
 			}
 		},
@@ -240,12 +243,10 @@
 		    let self = this;
 		    this.init();
 		  
-		    if (options['detail']){ // 列表直接点过来的方式
-		        let info = JSON.parse(decodeURIComponent(options['detail']));
-		        self.prepareData(info);
-		    } else if(options['id']){ // 传ID的方式
+		    if(options['id']){ // 传ID的方式
+				console.log('111')
 		        visitChannel(options['id']).then(res => {
-		            // console.log(res);
+		            console.log(res);
 		            self.prepareData(res.data);
 		        }).catch(err=>{
 					uni.showToast({
@@ -291,6 +292,27 @@
 			// #endif
 		},
 		methods:{
+			//点击底部x按钮
+			logout(){
+				
+			},
+			//去抢购
+			toBuy(product_id){
+				console.log('product_id',product_id)
+			},
+			//关注主播
+			toFocus(){
+				let id = this.initchunk.store_staff_id;
+				liveFocus(id).then(res=>{
+					console.log(res)
+				}).catch(e=>{
+					uni.showToast({
+						title: e,
+						icon: 'none',
+						duration: 2000
+					});
+				})
+			},
 			//隐藏商品列表
 			hideList(e){
 				this.showGoodsList = this.showGoodsList != 0 && -1;
@@ -302,6 +324,7 @@
 			prepareData(data){
 			    let self = this;
 				this.initchunk = data;
+				this.goodsLists = data.channel_products;
 				getusersig().then(res => {
 				    let initchunk = self.initchunk
 				    let {
