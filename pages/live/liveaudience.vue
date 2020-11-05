@@ -237,40 +237,40 @@
 			}
 		},
 		onLoad: function(options) {
-		    // let self = this;
-		    // this.init();
+		    let self = this;
+		    this.init();
 		  
-		  //   if (options['detail']){ // 列表直接点过来的方式
-		  //       let info = JSON.parse(decodeURIComponent(options['detail']));
-		  //       self.prepareData(info);
-		  //   } else if(options['id']){ // 传ID的方式
-		  //       visitChannel(options['id']).then(res => {
-		  //           // console.log(res);
-		  //           self.prepareData(res.data);
-		  //       }).catch(err=>{
-				// 	uni.showToast({
-				// 		title: err,
-				// 		icon: 'none',
-				// 		duration: 2000
-				// 	});
-				// 	setTimeout(()=>{
-				// 		uni.reLaunch({
-				// 			url:'/pages/live/index'
-				// 		})
-				// 	},2000);
-		  //       });
-		  //   }else{
-				// uni.showToast({
-				// 	title: '参数丢失',
-				// 	icon: 'none',
-				// 	duration: 2000
-				// });
-				// setTimeout(()=>{
-				// 	uni.reLaunch({
-				// 		url:'/pages/live/index'
-				// 	})
-				// },2000);
-		  //   }
+		    if (options['detail']){ // 列表直接点过来的方式
+		        let info = JSON.parse(decodeURIComponent(options['detail']));
+		        self.prepareData(info);
+		    } else if(options['id']){ // 传ID的方式
+		        visitChannel(options['id']).then(res => {
+		            // console.log(res);
+		            self.prepareData(res.data);
+		        }).catch(err=>{
+					uni.showToast({
+						title: err,
+						icon: 'none',
+						duration: 2000
+					});
+					setTimeout(()=>{
+						uni.reLaunch({
+							url:'/pages/live/index'
+						})
+					},2000);
+		        });
+		    }else{
+				uni.showToast({
+					title: '参数丢失',
+					icon: 'none',
+					duration: 2000
+				});
+				setTimeout(()=>{
+					uni.reLaunch({
+						url:'/pages/live/index'
+					})
+				},2000);
+		    }
 		    
 		},
 		//登出 - webim.logout(cbOk, cbErr)
@@ -318,19 +318,7 @@
 				    }
 				})
 			},
-			// 跳转到商品
-			goGoods(e) {
-			    let url = e.currentTarget.dataset['url']
-			    uni.navigateTo({
-			        url: url
-			    });
-			},
-			// 去购物车
-			gotocart(){
-			    uni.navigateTo({
-			        url: '/pages/order_addcart/order_addcart'
-			    });
-			},
+
 			//发送消息
 			bindConfirm: function(e) {
 			    var _this = this;
@@ -339,6 +327,9 @@
 			    webimhandler.onSendMsg(content, function() {
 			        _this.clearInput();
 			    })
+			},
+			clearInput(){
+				this.msgContent = '';
 			},
 			msgContenthandle(e) {
 			    var content = e.detail.value;
