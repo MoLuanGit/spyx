@@ -87,7 +87,7 @@
 		<!-- 商品列表弹窗 -->
 		<view class="goodslists" :class="showGoodsList==-1?'hide':showGoodsList==1?'show':''" @click.stop="">
 			<view class="goods-title">
-				共{{showGoodsList.length}}件商品
+				共{{goodsLists.length}}件商品
 			</view>
 			<scroll-view scroll-y class="lists">
 			  <view class="list-item"
