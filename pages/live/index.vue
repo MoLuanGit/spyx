@@ -9,10 +9,11 @@
 		</view>
 		<view class="container">
 			<view class='liveswiper'>
-			  <swiper :indicator-dots="true" 
+			  <swiper :indicator-dots="true"
 			    :autoplay="true" 
 			    :interval="5000" 
 			    :duration="1000"
+				:circular="true"
 			    class="swiper-box">
 			    <block v-for="(item,index) in livelistdata['banner_list']" :key="index">
 			      <swiper-item
@@ -30,29 +31,41 @@
 			
 			  <view 
 			    v-for="(item,index) in livelistdata['living_list']" :key="index" 
-			    :data-detail="item"
+			    :data-index="index"
 			    @click="liveaudience"
-			    class="onlivewrap m-b30">
+			    class="onlivewrap"
+				:class="index != livelistdata['living_list'].length - 1 ? 'm-b30':''">
 			    <view class="p-relative">
 			      <image class="pic-goods" :src="item.cover"></image>
 			      <view class="tag">
 			        <image class="icon-onlive" src="/static/images/onlive.png"></image>
-			        <text>直播中</text>
+			        <text class="text">直播中</text>
 			      </view>
+				  <view class="p-bottom">
+				  	<view class="p-l">
+				  		<image class="icon-onlive" src="/static/images/people.png"></image>
+				  		<view class="text">1208</view>
+				  	</view>
+					<view class="p-r">
+						<!-- <image class="icon-onlive" src="/static/images/zanroom.png"></image> -->
+						<image class="icon-onlive" src="/static/images/zanroom1.png"></image>
+						<view class="text">2.5w</view>
+					</view>
+				  </view>
 			    </view>
 			    <view class="conwrap">
 			      <view class="tit">{{item.title}}</view>
 			      <view class="desc">{{item.employee.nickname}}</view>
 			      <view class="pic-wrap">
 			        <block 
-			          v-for="(item,index) in item['goods']['list']" 
-			          :key="index">
-			          <image v-:if="index<2" class="pic-small" :src="item.image"></image>
+			          v-for="(item,idx) in item['goods']['list']" 
+			          :key="index+''+idx">
+			          <image v-if="idx<2" class="pic-small" :src="item.image"></image>
 			        </block>
 			        
 			        <view class="pic-small-tips">
-			          <view>{{item['goods']['count']}}件</view>
-			          <view>直播购</view>
+			          <view class="text">{{item['goods']['count']}}件</view>
+			          <view class="text">直播购</view>
 			        </view>
 			      </view>
 			    </view>
@@ -60,19 +73,19 @@
 			
 			  <view class="listtitle">即将开播</view>
 			
-			  <view v-for="(item,index) in livelistdata['subscribe_list']" :key="index" class="onlivewrap m-b30">
+			  <view v-for="(item,index) in livelistdata['subscribe_list']" :key="0+''+index" class="onlivewrap m-b30">
 			    <view class="p-relative">
 			      <image class="pic-goods" :src="item.cover"></image>
 			      <view class="tag">
 			        <image class="icon-onlive" src="/static/images/yugao.png"></image>
-			        <text>预告</text>
+			        <text class="text">预告</text>
 			      </view>
 			    </view>
 			    <view class="conwrap">
 			      <view class="tit">{{item.title}}</view>
 			      <view class="desc">{{item.employee.nickname}}</view>
 			      <view class="kaibo-time">{{item.open_time}}</view>
-			      <view :data-channelid= "item['channel_id']" bindtap="messagehandle" class="kaibo-btn" :data-index="index" v-if="item['is_subscribe']==0">开播提醒</view>
+			      <view :data-channelid= "item['channel_id']" @click="messagehandle" class="kaibo-btn" :data-index="index" v-if="item['is_subscribe']==0">开播提醒</view>
 			      <view class="kaibo-btn" :data-index="index" v-else>已订阅</view>
 			    </view>
 			  </view>
@@ -113,11 +126,73 @@
 		},
 		data() {
 			return {
-				title:'超级购物台',
+				title:'直播列表',
 				isGoIndex: false,
 				isShowAuth: false,
 				isAuto: false,
-				livelistdata: '',
+				livelistdata: {
+					"banner_list":[
+						{
+							"image":'/static/images/bargainBg.jpg',
+							'url':'pages/index/index',
+						},
+						{
+							"image":'/static/images/bargainBg.jpg',
+						},
+					],
+					'living_list':[
+						{
+							'cover':'/static/images/bargainBg.jpg',
+							'title':'冬日温暖，贴身舒适',
+							'employee':{
+								'nickname':'直播柚子酱'
+							},
+							'goods':{
+								list:[{
+									'image':'/static/images/address.png'
+								},
+								{
+									'image':'/static/images/address.png'
+								}],
+								count:23
+							}
+						},
+						{
+							'cover':'/static/images/bargainBg.jpg',
+							'title':'冬日温暖，贴身舒适',
+							'employee':{
+								'nickname':'直播柚子酱'
+							},
+							'goods':{
+								list:[{
+									'image':'/static/images/address.png'
+								}],
+								count:23
+							}
+						},
+					],
+					'subscribe_list':[
+						{
+							'cover':'/static/images/bargainBg.jpg',
+							"title":'高端品牌专场-买手推荐',
+							'employee':{
+								'nickname':'直播公子李'
+							},
+							'open_time':'3月20日  10:00开播',
+							'is_subscribe':0,
+							'channel_id':1,
+						},
+						{
+							'cover':'/static/images/bargainBg.jpg',
+							"title":'高端品牌专场-买手推荐',
+							'employee':{
+								'nickname':'直播公子李'
+							},
+							'open_time':'3月20日  10:00开播',
+							'is_subscribe':1,
+						},
+					],
+				},
 				page:1,
 				limit:10,
 				isScroll:true,
@@ -146,25 +221,26 @@
 			},
 			liveaudience(e) {
 			    console.log(e);
-			    let detail = e.currentTarget.dataset['detail']
+			    let index = e.currentTarget.dataset['index']
+				let detail = this.livelistdata.living_list[index]
 			    uni.navigateTo({
 			        url: `/pages/live/liveaudience?detail=${encodeURIComponent(JSON.stringify(detail))}`
 			    })
 			},
 			bannerurlhandle(e) {
 			    let url = e.currentTarget.dataset['url']
+				console.log('bannerurlhandle',url)
 			    uni.navigateTo({
 			        url: `/${url}`
 			    })
 			},
 			onReachBottom() {
-				this.getlivelist()
+				console.log('onReachBottom')
+				// this.getlivelist()
 			},
 			// 订阅
 			messagehandle(e) {
 			    var self = this;
-				
-			    // console.log(e);return;
 			    if (!this.livelistdata.template_id){
 					uni.showToast({
 						title: '未配置订阅模板，请联系管理员',
@@ -241,12 +317,13 @@
 	}
 	.container{
 		padding-top: 64px;
+		padding-bottom: 50px;
 	}
 	page{
 	  background-color: #DF828C !important;
 	  min-height: 100vh;
 	}
-	.swiperitemwrap{height: 240rpx;}
+	.swiper-box,.swiperitemwrap{height: 240rpx !important;}
 	.pic-swiper{width:100%;height:100%;}
 	.swiper-box .wx-swiper-dot{width:14rpx;display: inline-flex;height: 14rpx;justify-content:space-between;}
 	.swiper-box .wx-swiper-dot::before{ content: '';flex-grow: 1;border-radius: 14rpx;transition: all .3s ease-in-out;}
@@ -318,13 +395,20 @@
 	  border-radius: 10rpx;
 	  display: inline-block;
 	  margin-top:20rpx;
-	  background-color: #e4e7ff;
+	  background-color: #FFE4E7;
 	  text-align: center;
-	  color:#747bb1;
-	  padding-top:30rpx;
-	  font-size:20rpx;
+	  color:#DF828C;
+	  padding-top:20rpx;
+	  font-size:18rpx;
 	}
-	
+	.pic-small-tips .text{
+		font-size: 36rpx;
+		transform: scale(0.5);
+		line-height: 32rpx;
+	}
+	.p-relative{
+		position: relative;
+	}
 	.onlivewrap .tag{
 	  position: absolute;
 	  left:12rpx;
@@ -334,13 +418,18 @@
 	  height: 26rpx;
 	  line-height: 26rpx;
 	  border-radius: 26rpx;
-	  background-color:#ff0000;
+	  background-color:rgb(255,126,74);
 	  color: #ffffff;
 	  font-size: 14rpx;
 	  text-align: center;
 	  display: flex;
 	  align-items:center;
 	  justify-content: center;
+	}
+	.tag .text{
+		font-size: 24upx;
+		transform: scale(0.6);
+		margin:0 -6rpx;
 	}
 	.onlivewrap .tag .icon-onlive{
 	  width:16rpx;
@@ -349,6 +438,38 @@
 	  display: inline-block;
 	  align-self:center;
 	}
+	
+	.p-bottom{
+		position: absolute;
+		width:100%;
+		left:0rpx;
+		bottom:15rpx;
+		display: flex;
+		padding: 0 10rpx 0 12rpx;
+		justify-content: space-between;
+		
+			
+		.text{
+			font-size: 24rpx;
+			transform: scale(0.7);
+			color: #FFFFFF;
+		}
+	}
+	.p-r,.p-l{
+		display: flex;
+		align-items: center;
+	}
+	.p-bottom .icon-onlive{
+		width:18rpx;
+		height: 20rpx;
+	}
+	.p-bottom .p-r .icon-onlive{
+		width: 22rpx;
+		height:20rpx;
+	}
+	
+	
+	
 	.m-b30{
 	  margin-bottom: 30rpx;
 	}
@@ -387,7 +508,7 @@
 	  border-radius: 52rpx;
 	  color:#ffffff;
 	  font-size: 24rpx;
-	  background-color: #747BB1;
+	  background-color: #DF828C;
 	  margin-top:20rpx;
 	}
 </style>

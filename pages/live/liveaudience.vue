@@ -1,100 +1,121 @@
 <template>
-	<view class="">
-		<view class="navbar">
-			<view class="nav">
-			</view>
-			<view class="title">
-				{{title}}
-			</view>
+	<view class="container" @click="hideList">
+		<view id="toparea" class="flex">
+		  <!-- 直播间 -->
+		  <view class="roomright">
+		     <live-player 
+		      id="player" 
+		      :src="initchunk['play_url'][0]" 
+		      mode="live"
+		      autoplay
+		      @statechange="statechange" 
+		      object-fit="fillCrop" 
+		      :picture-in-picture-mode="['push', 'pop']"
+		      @error="error" />
+		    <!-- 顶部信息 -->
+		    <view class="roomrttop">
+		      <image :src="initchunk['employee']['avatar']" class="icon-user"></image>
+		      <view class="infor">
+		        <view class="name">{{initchunk['employee']['nickname']}}</view>
+		        <view class="num">1.6万本场点赞</view>
+		      </view>
+			  <view class="btn">
+			  	关注
+			  </view>
+		    </view>
+		    
+		  </view>
+		  <!-- end -->
 		</view>
-		<view class="container">
-			<view id="toparea" class="flex">
-			  <!-- 左边 -->
-			  <view class="roomleft">
-			    <view class="label">正在讲解</view>
-			    <scroll-view scroll-y class="roomleftscroll">
-			      <view v-for="(item,index) in initchunk['goods']['list']" :key="index" class="gooditem" @click="goGoods" :data-url="item['url']">
-			        <image :src="item['image']" class="goods-pic" ></image>
-			        <view class="price">￥{{item['price']}}</view>
-			      </view>
-			    </scroll-view>
-			  </view>
-			  <!-- 直播间 -->
-			  <view class="roomright">
-			     <live-player 
-			      id="player" 
-			      :src="initchunk['play_url'][0]" 
-			      mode="live"
-			      autoplay
-			      @statechange="statechange" 
-			      object-fit="fillCrop" 
-			      :picture-in-picture-mode="['push', 'pop']"
-			      @error="error" />
-			    <!-- 顶部信息 -->
-			    <view class="roomrttop">
-			      <image :src="initchunk['employee']['avatar']" class="icon-user"></image>
-			      <view class="infor">
-			        <view class="name">{{initchunk['employee']['nickname']}}</view>
-			        <!-- <view class="num">在线7383</view> -->
-			      </view>
-			      <!-- <view class="flex-1">
-			        <view class="fllow">关注</view>
-			      </view> -->
-			      <!-- <view class="qingmi">
-			        <view class="scroce">亲密值2</view>
-			        <view class="linqu">领取</view>
-			      </view> -->
-			    </view>
-			    <!-- 底部信息 -->
-			    <view class="roomrtbottom">
-			        <navigator url="/pages/order_addcart/order_addcart" hover-class="none" open-type="switchTab" class="btn-car">
-			            <image class="icon-car" src="/static/images/car.png"></image>
-			        </navigator>
-			      <!-- <view class="btn-car" bindtap="gotocart">
-			        <image class="icon-car" src="../../../images/live/car.png"></image>
-			      </view> -->
-			      <!-- <view class="zanwrap">
-			        <image class="icon-zan" src="../../../images/live/zanroom.png"></image>
-			      </view> -->
-			    </view>
-			  </view>
-			  <!-- end -->
+		
+		<!-- 底部信息 -->
+		<view class="commentareawrap" :style="{height:commentareaH+'px'}">
+		  <scroll-view :scroll-into-view="'chat'+msgs.length" scroll-y :style="{height:commentareaH+'px',paddingBottom:'60px'}">
+		    <view class="msgs-wrapper">
+		      <view class="msgs" 
+		        v-for="(item,index) in msgs" 
+		        :key="index"
+		        :id="'chat'+index+1">
+		        <view class="msg-item">
+		          <view class="nickname">{{item.fromAccountNick}}:</view>
+				  <view class="content">{{item.content}}</view>
+		        </view>
+		      </view>
+		    </view>
+		  </scroll-view>
+
+		  <view class="roomrtbottom">
+		    <view @click="chatbtnhandle" class="btn-input">
+				<view class="text">
+					说点什...
+				</view>
+				<image class="icon-car" src="/static/images/live-input.png"></image>
+		    </view>
+		    <view class="btns">
+		    	<view class="btn-car btn-car1" @click.stop="showGoods">
+		    	  <image class="icon-car" src="/static/images/car1.png"></image>
+		    	</view>
+		    	<view class="btn-car btn-car2">
+		    	  <image class="icon-car" src="/static/images/zanroom1.png"></image>
+		    	</view>
+		    	<view class="btn-car btn-car3">
+		    	  <image class="icon-car" src="/static/images/cancel.png"></image>
+		    	</view>
+		    </view>
+		  </view>
+		</view>
+		<view 
+		  v-if="isMsgContent"
+		  :style="{bottom:keyboard_height + 'px'}" 
+		  class="input-section">
+		  <input :value="msgContent" 
+		  :adjustPosition="false"
+		  class="txt"
+		  :focus="isMsgContent"
+		  placeholder="说点什么吧"
+		  @focus="focusmsgContentFocus"
+		  @keyboardheightchange="keyboardHeightChange"
+		  @blur="blurmsgContenthandle" 
+		  @input="msgContenthandle"
+		  @confirm="bindConfirm" />
+		  <view @click="bindConfirm" class="btn-send" :class="msgContent ? 'btn-sended':''">发送</view>
+		</view>
+		
+		<!-- 商品列表弹窗 -->
+		<view class="goodslists" :class="showGoodsList==-1?'hide':showGoodsList==1?'show':''" @click.stop="">
+			<view class="goods-title">
+				共{{goodsNums}}件商品
 			</view>
-			
-			<view class="commentareawrap" :style="{height:commentareaH+'px'}">
-			  <scroll-view :scroll-into-view="'chat'+msgs.length" scroll-y :style="{height:commentareaH+'px'}">
-			    <view class="tips">喜欢主播点赞哦，加购TA推荐的好货!智联绿色直播，禁止低俗、引诱、暴露等一切黄赌毒内容，警察叔叔24小时巡查哦！！！</view>
-			    <view class="msgs-wrapper">
-			      <view class="msgs" 
-			        v-for="(item,index) in msgs" 
-			        :key="index"
-			        :id="'chat'+index+1">
-			        <text class="msg-item">
-			          <text class="nickname">{{item.fromAccountNick}}</text>{{item.content}}
-			        </text>
-			      </view>
-			    </view>
-			  </scroll-view>
-			  <view @click="chatbtnhandle" class="btn-chat">
-			    <image  class="icon-chat" src="/static/images/chat.png"></image>
+			<scroll-view scroll-y class="lists">
+			  <view class="list-item"
+			    v-for="(item,index) in goodsLists" 
+			    :key="index"
+				:class="item.is_ing == 1?'active-bg':''">
+				<view class="img">
+					<image :src="item.image" class="goods-img"></image>
+					<view class="is-ing" v-if="item.is_ing">
+						<image src="/static/images/is_ing.png" class="img1"></image>
+						<view class="">
+							讲解中
+						</view>
+					</view>
+				</view>
+				<view class="info">
+					<view class="goodsname">
+						{{item.goodsname}}
+					</view>
+					<view class="bottom">
+						<view class="price">
+							<image src="/static/images/meiyuan.png" class="icon-price"></image>
+							{{item.price}}
+						</view>
+						<view class="btn">
+							去抢购
+						</view>
+					</view>
+				</view>
 			  </view>
-			</view>
-			<view 
-			  v-if="isMsgContent"
-			  :style="{bottom:keyboard_height + 'px'}" 
-			  class="input-section">
-			  <input :value="msgContent" 
-			  :adjustPosition="false"
-			  class="txt"
-			  :focus="isMsgContent"
-			  placeholder="说点什么吧"
-			  @focus="focusmsgContentFocus"
-			  @keyboardheightchange="keyboardHeightChange"
-			  @blur="blurmsgContenthandle" 
-			  @input="msgContenthandle"
-			  @confirm="bindConfirm" />
-			  <view @click="bindConfirm" class="btn-send" :class="msgContent ? 'btn-sended':''">发送</view>
-			</view>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -110,8 +131,54 @@
 	export default {
 		data(){
 			return {
+				goodsNums:24,
+				showGoodsList:0,
+				goodsLists:[
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':1,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':0,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':0,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':0,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':0,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':1,
+					},
+					{
+						'image':'/static/images/bargainBg.jpg',
+						'price':123.8,
+						'goodsname':'好波内衣女春夏新款无钢圈',
+						'is_ing':0,
+					},
+				],
 				title:'超级购物台',
-				commentareaH: 178, //下面高度
+				commentareaH: 255, //下面高度
 				userSig: '',
 				identifier: '',
 				nickName: '',
@@ -120,45 +187,90 @@
 				//input输入
 				msgContent: "",
 				isMsgContent: false,
-				msgs: [],
+				msgs: [
+					{
+						'fromAccountNick':'zs',
+						'content':'玩哈哈哈，哇哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈13哈哈哈哈哈哈',
+					},
+					{
+						'fromAccountNick':'ls',
+						'content':'22',
+					},
+					{
+						'fromAccountNick':'ww',
+						'content':'有意所哦和有三亚房价是阿斯顿法国红酒看来',
+					},
+					{
+						'fromAccountNick':'zs',
+						'content':'11',
+					},
+					{
+						'fromAccountNick':'ls',
+						'content':'22',
+					},
+					{
+						'fromAccountNick':'ww',
+						'content':'有意所以',
+					},
+				],
 				ctx:null,
+				initchunk:{
+					'cover':'/static/images/bargainBg.jpg',
+					'title':'冬日温暖，贴身舒适',
+					'play_url':[
+						'',
+					],
+					'employee':{
+						'nickname':'直播柚子酱',
+						'avatar':'/static/images/bargainBg.jpg',
+					},
+					'goods':{
+						list:[{
+							'image':'/static/images/address.png'
+						},
+						{
+							'image':'/static/images/address.png'
+						}],
+						count:23
+					}
+				},
 			}
 		},
 		onLoad: function(options) {
-		    let self = this;
-		    this.init();
+		    // let self = this;
+		    // this.init();
 		  
-		    if (options['detail']){ // 列表直接点过来的方式
-		        let info = JSON.parse(decodeURIComponent(options['detail']));
-		        self.prepareData(info);
-		    } else if(options['id']){ // 传ID的方式
-		        visitChannel(options['id']).then(res => {
-		            // console.log(res);
-		            self.prepareData(res.data);
-		        }).catch(err=>{
-					uni.showToast({
-						title: err,
-						icon: 'none',
-						duration: 2000
-					});
-					setTimeout(()=>{
-						uni.reLaunch({
-							url:'/pages/live/index'
-						})
-					},2000);
-		        });
-		    }else{
-				uni.showToast({
-					title: '参数丢失',
-					icon: 'none',
-					duration: 2000
-				});
-				setTimeout(()=>{
-					uni.reLaunch({
-						url:'/pages/live/index'
-					})
-				},2000);
-		    }
+		  //   if (options['detail']){ // 列表直接点过来的方式
+		  //       let info = JSON.parse(decodeURIComponent(options['detail']));
+		  //       self.prepareData(info);
+		  //   } else if(options['id']){ // 传ID的方式
+		  //       visitChannel(options['id']).then(res => {
+		  //           // console.log(res);
+		  //           self.prepareData(res.data);
+		  //       }).catch(err=>{
+				// 	uni.showToast({
+				// 		title: err,
+				// 		icon: 'none',
+				// 		duration: 2000
+				// 	});
+				// 	setTimeout(()=>{
+				// 		uni.reLaunch({
+				// 			url:'/pages/live/index'
+				// 		})
+				// 	},2000);
+		  //       });
+		  //   }else{
+				// uni.showToast({
+				// 	title: '参数丢失',
+				// 	icon: 'none',
+				// 	duration: 2000
+				// });
+				// setTimeout(()=>{
+				// 	uni.reLaunch({
+				// 		url:'/pages/live/index'
+				// 	})
+				// },2000);
+		  //   }
 		    
 		},
 		//登出 - webim.logout(cbOk, cbErr)
@@ -179,6 +291,14 @@
 			// #endif
 		},
 		methods:{
+			//隐藏商品列表
+			hideList(e){
+				this.showGoodsList = this.showGoodsList != 0 && -1;
+			},
+			showGoods(){
+				console.log('showgoods')
+				this.showGoodsList = 1;
+			},
 			prepareData(data){
 			    let self = this;
 				this.initchunk = data;
@@ -392,30 +512,125 @@
 </script>
 
 <style lang="scss">
-	
-	.navbar{
-		text-align: center;
-		height: 64px;
-		position: fixed;
+	.goodslists{
+		width:100%;
+		height:0;
 		background-color: #fff;
-		top: 0;
-		left: 0;
-		z-index: 999;
-		width: 100%;
-		background-color: #DF828C;
-		.title{
-			color: #fff;
-			font-size: 36rpx;
-			line-height: 64px;
-			font-weight: bold;
+		position: fixed;
+		z-index: 10;
+		bottom: 0;
+		border-radius: 20rpx 20rpx 0 0;
+		
+		.goods-title{
+			height:80rpx;
+			background-color: #fff;
+			line-height: 80rpx;
+			padding-left: 30rpx;
+			color:#333;
+			border-radius: 20rpx 20rpx 0 0;
+		}
+		.lists{
+			height: calc(800rpx - 80rpx);
+			min-height: 400rpx;
 		}
 	}
-		
+	@keyframes showList{
+		0%{
+			height:0rpx;
+		},
+		100%{
+			height:800rpx;
+		}
+	}
+	@keyframes hideList{
+		0%{
+			height:800rpx;
+		},
+		100%{
+			height:0rpx;
+		}
+	}
+	.show{
+		animation: showList 0.5s ease 0s 1 alternate forwards;
+	}
+	.hide{
+		animation: hideList 0.5s ease 0s 1 alternate forwards;
+	}
+	.active-bg{
+		background-color: #FEF4F4;
+	}
+	.list-item{
+		height:200rpx;
+		// border-bottom:1rpx solid #ccc;
+		padding: 20rpx 24rpx;
+		display: flex;
+		justify-content: space-between;
+			
+		.img{
+			position: relative;
+			.goods-img{
+				width: 160rpx;
+				height: 160rpx;
+			}
+			.is-ing{
+				width: 160rpx;
+				height: 40rpx;
+				background: linear-gradient(-90deg, rgba(255,90,0,0.5), rgba(255,129,79,0.5));
+				position: absolute;
+				bottom: 0;
+				font-size: 24rpx;
+				color:#fff;
+				justify-content: center;
+				align-items: center;
+				display: flex;
+				.img1{
+					width: 20rpx;
+					height: 20rpx;
+					margin-right: 10rpx;
+				}
+			}
+		}
+		.info{
+			flex:1;
+			display: flex;
+			padding-left: 20rpx;
+			flex-direction: column;
+			justify-content: space-between;
+			.goodsname{
+				font-size: 30rpx;
+				color: #333333;
+			}
+			.bottom{
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-end;
+				.price{
+					color: #FF5A00;
+					font-size: 38rpx;
+					font-weight: 500;
+					.icon-price{
+						width:12rpx;
+						height:14rpx;
+					}
+				}
+				.btn{
+					width: 160rpx;
+					height: 60rpx;
+					background: linear-gradient(-90deg, #FF5A00, #FF814F);
+					border-radius: 5rpx;
+					line-height: 60rpx;
+					text-align: center;
+					color:#FFFFFF;
+					font-size: 30rpx;
+				}
+			}
+		}
+	}
 	.container{
-		padding-top: 64px;
+		min-height: 100vh;
 	}
 	page{
-	  background-color: #DF828C !important;
 	  min-height: 100vh;
 	}
 	.flex{display:flex }
@@ -425,51 +640,13 @@
 	  height: 0;
 	  color: transparent;
 	}
-	.roomleft{
-	  width:176rpx;
-	  height:842rpx;
-	}
-	.roomleft .label{
-	  width:110rpx;
-	  height:30rpx;
-	  line-height:30rpx;
-	  text-align: center;
-	  background-color: #ff1200;
-	  font-size: 18rpx;
-	  color:#ffffff;
-	}
-	.roomleftscroll{
-	  height:812rpx;
-	  margin-left:24rpx;
-	}
-	.roomleftscroll .gooditem{
-	  margin-top:18rpx;
-	  width:130rpx;
-	  height:130rpx;
-	  position: relative;
-	}
-	.roomleftscroll .goods-pic{
-	  width:130rpx;
-	  height:130rpx;
-	}
-	.roomleftscroll .price{
-	  position: absolute;
-	  bottom:0;
-	  left:0;
-	  right:0;
-	  padding-left:10rpx;
-	  padding-right:10rpx;
-	  height:30rpx;
-	  line-height:30rpx;
-	  background-color: rgba(0, 0, 0, 0.3);
-	  font-size: 18rpx;
-	  color:#ffffff;
-	}
 	
 	.commentareawrap{
+		width: 100%;
 	  padding-left:24rpx;
 	  padding-right:24rpx;
-	  position: relative;
+	  position: fixed;
+	  bottom: 0;
 	  margin-top:10px;
 	}
 	.commentareawrap .tips{
@@ -487,10 +664,25 @@
 	}
 	.msgs-wrapper .msgs .msg-item{
 	  color:#ffffff; 
+	  display: flex;
+	  padding: 0 31rpx;
+	  background: rgba(0,0,0,0.17);
+	  border-radius: 35rpx;
+	  // line-height: 60rpx;
+	  font-size: 30rpx;
+	 
+	  .content{
+		  line-height: 50rpx;
+		  margin-top:10rpx;
+		  margin-bottom:10rpx;
+	  }
 	}
 	.msgs-wrapper .msgs .nickname{
-	  color:#ffb497;
-	  margin-right:10px;
+		line-height: 50rpx;
+	  color:#6CDBFF;
+		margin-top:10rpx;
+	  margin-bottom:10rpx;
+		margin-right: 13rpx;
 	}
 	.input-section{
 	  position:fixed;
@@ -547,41 +739,58 @@
 	}
 	
 	.roomright{
-	  height:842rpx;
-	  width:576rpx;
-	  background: #f5f5f5;
+	  height:100vh;
+	  width:750rpx;
+	  // background: #f5f5f5;
+	  background-color: #DF828C !important;
 	  position: relative;
 	}
 	live-player{
-	  height:842rpx;
-	  width:576rpx;
+	  height:100vh;
+	  width:750rpx;
 	}
 	
 	.roomrttop{
 	  position: absolute;
-	  left:0;
-	  right:0;
-	  top:10px;
+	  left:24rpx;
+	  top:35rpx;
 	  display: flex;
 	  align-items: center;
+	  width: 375rpx;
+	  height: 100rpx;
+	  background: rgba(0,0,0,0.17);
+	  border-radius: 50rpx;
+		.btn{
+			width: 120rpx;
+			height: 60rpx;
+			background: linear-gradient(-90deg, #FF5A00, #FF814F);
+			border-radius: 30px;
+			line-height: 60rpx;
+			text-align: center;
+			color:#FEFEFE;
+			font-size: 30rpx;
+		}
 	}
 	.roomrttop .icon-user{
-	  height:48rpx;
-	  width:48rpx;
-	  border-radius: 100%; 
-	  margin-left:20rpx; 
+	  height:70rpx;
+	  width:70rpx;
+	  border-radius: 50%; 
+	  margin-left:8rpx; 
 	}
 	.roomrttop .infor{
-	  margin-left:15rpx; 
+	  margin-left:4rpx; 
+	  margin-right:8rpx; 
 	}
 	.roomrttop .infor .name{
-	  font-size: 24rpx;
+	  font-size: 30rpx;
 	  color:#ffffff;
 	  font-weight:500;
 	}
 	.roomrttop .infor .num{
-	  font-size: 18rpx;
+	  font-size: 24rpx;
+	  margin-left: -20rpx;
 	  color:#ffffff;
+	  transform: scale(0.8);
 	}
 	
 	.roomrttop .fllow{
@@ -624,24 +833,58 @@
 	  position: absolute;
 	  left:0;
 	  right:0;
-	  bottom:10px;
+	  bottom:32rpx;
+	  padding: 0 24rpx;
 	  display: flex;
 	  align-items: center;
-	  justify-content:flex-end;
+	  justify-content:space-between;
+	  .btn-input{
+		  width: 270rpx;
+		  height: 70rpx;
+		  background: rgba(0,0,0,0.17);
+		  border-radius: 35rpx;
+		  line-height: 70rpx;
+		  padding: 0 31rpx;
+		  color:#6CDBFF;
+		  font-size: 30rpx;
+		  display: flex;
+		  justify-content: space-between;
+		  align-items: center;
+		  .icon-car{
+			  width: 28rpx;
+			  height:40rpx;
+		  }
+	  }
+	  .btns{
+		  display: flex;
+	  }
 	}
 	.btn-car{
-	  margin-right:30rpx;
-	  width:86rpx;
-	  height: 86rpx;
+	  width:74rpx;
+	  height: 74rpx;
 	  border-radius:100%;
 	  display: flex;
 	  align-items: center;
 	  justify-content: center;
 	  background-color: rgba(0, 0, 0, 0.3);
 	}
-	.btn-car .icon-car{
+	.btn-car1 .icon-car{
 	  width:48rpx;
-	  height:37rpx;
+	  height:48rpx;
+	}
+	.btn-car2 {
+	  margin-left: 44rpx;
+	  .icon-car{
+		  width:48rpx;
+		  height:44rpx;
+	  }
+	}
+	.btn-car3{
+		margin-left: 44rpx;
+		.icon-car{
+		  width:40rpx;
+		  height:40rpx;
+		}
 	}
 	.zanwrap{
 	  margin-right:30rpx;
@@ -651,7 +894,7 @@
 	  display: flex;
 	  align-items: center;
 	  justify-content: center;
-	  background-image: linear-gradient(to right,#ff0000 0%,#ff4800 100%);
+	  // background-image: linear-gradient(to right,#ff0000 0%,#ff4800 100%);
 	}
 	.zanwrap .icon-zan{
 	  width:48rpx;
