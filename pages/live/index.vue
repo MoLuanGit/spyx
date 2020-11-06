@@ -44,12 +44,12 @@
 				  <view class="p-bottom">
 				  	<view class="p-l">
 				  		<image class="icon-onlive" src="/static/images/people.png"></image>
-				  		<view class="text">1208</view>
+				  		<view class="text">{{item.zan_num | numTostr}}</view>
 				  	</view>
 					<view class="p-r">
 						<!-- <image class="icon-onlive" src="/static/images/zanroom.png"></image> -->
 						<image class="icon-onlive" src="/static/images/zanroom1.png"></image>
-						<view class="text">2.5w</view>
+						<view class="text">{{item.person_num | numTostr}}</view>
 					</view>
 				  </view>
 			    </view>
@@ -58,9 +58,9 @@
 			      <view class="desc">{{item.anchor_name}}</view>
 			      <view class="pic-wrap">
 			        <block 
-			          v-for="(item,idx) in item['channel_products']" 
+			          v-for="(ele,idx) in item['channel_products']" 
 			          :key="idx">
-			          <image v-if="idx<2" class="pic-small" :src="item.cover_img"></image>
+			          <image v-if="idx<2" class="pic-small" :src="ele.cover_img"></image>
 			        </block>
 			        
 			        <view class="pic-small-tips">
@@ -200,6 +200,18 @@
 		    if (!this.isLogin) {
 				console.log('111')
 				this.isShowAuth = true;
+			}
+		},
+		filters:{
+			numTostr(num){
+				let res;
+				// if(num < 9999){
+				// 	res = num;
+				// }else{
+				// 	res = Math.floor(num/10000) + '.' + num % 10000
+				// }
+				res = num < 9999 ? num : Math.floor(num/10000) + '.' + num % 10000 + 'w';
+				return res
 			}
 		},
 		methods:{

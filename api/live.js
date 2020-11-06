@@ -60,3 +60,13 @@ export function messagetips(id) {
 export function liveFocus(id){
 	return request.get('channel/focus/'+id)
 }
+
+//点赞
+export function zan(id){
+	return request.get('channel/zan/'+id)
+}
+
+//点赞数
+export function getZanNum(id){
+	return request.get('guide/channel/zan_num/'+id)
+}

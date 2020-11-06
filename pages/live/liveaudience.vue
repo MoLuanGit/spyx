@@ -16,7 +16,7 @@
 		    <image :src="initchunk['anchor_img']" class="icon-user"></image>
 		    <view class="infor">
 		      <view class="name">{{initchunk['anchor_name']}}</view>
-		      <view class="num">1.6万本场点赞</view>
+		      <view class="num">{{zanNum | numTostr}}本场点赞</view>
 		    </view>
 					  <view class="btn" @click="toFocus" v-if="initchunk['is_focus'] == 0">
 					  	关注
@@ -125,7 +125,7 @@
 	var webimhandler = require('@/utils/wxim/webim_handler.js');
 	global.webim = webim;
 	import {
-	    getusersig, visitChannel,liveFocus
+	    getusersig, visitChannel,liveFocus,zan,getZanNum
 	} from "../../api/live.js";
 	
 	export default {
@@ -146,11 +146,26 @@
 				msgs: [],
 				ctx:null,
 				initchunk:{},
+				zanNum:0,
+			}
+		},
+		onPageScroll(res){
+			console.log(11,res)
+		},
+		filters:{
+			numTostr(num){
+				let res;
+				// if(num < 9999){
+				// 	res = num;
+				// }else{
+				// 	res = Math.floor(num/10000) + '.' + num % 10000
+				// }
+				res = num < 9999 ? num : Math.floor(num/10000) + '.' + num % 10000 + 'w';
+				return res
 			}
 		},
 		onLoad: function(options) {
 		    let self = this;
-		    this.init();
 		  
 		    if(options['id']){ // 传ID的方式
 				console.log('111')
@@ -201,9 +216,30 @@
 			// #endif
 		},
 		methods:{
+			
 			//点赞
 			support(){
-				
+				let self = this;
+				let id = this.initchunk.id;
+				zan(id).then(res=>{
+					console.log('zan--',res)
+					//同步点赞数
+					getZanNum(id).then(res=>{
+						console.log('同步点赞ok')
+						self.zanNum = res.data.zan_num;
+					})
+					uni.showToast({
+						title: res.msg,
+						icon: 'none',
+						duration: 2000
+					});
+				}).catch(err=>{
+					uni.showToast({
+						title: err,
+						icon: 'none',
+						duration: 2000
+					});
+				})
 			},
 			//点击底部x按钮
 			logout(){
@@ -243,6 +279,7 @@
 			    let self = this;
 				this.initchunk = data;
 				this.goodsLists = data.channel_products;
+				this.zanNum = data.zan_num;
 				getusersig().then(res => {
 				    let initchunk = self.initchunk
 				    let {
@@ -312,20 +349,6 @@
 			},
 			error(e) {
 			    console.error('live-player error:', e.detail.errMsg)
-			},
-			init() {
-			    // let _this = this;
-			    // uni.getSystemInfo({
-			    //     success: res => {
-			    //         let window_H = res.windowHeight;
-			    //         var query = uni.createSelectorQuery();
-			    //         let commentareaH
-			    //         query.select('#toparea').boundingClientRect(res => {
-			    //             commentareaH = window_H - res.height
-							// console.log('commentareaH',commentareaH)
-			    //         }).exec();
-			    //     }
-			    // })
 			},
 			//初始化IM
 			initIM: function() {
@@ -440,6 +463,7 @@
 
 <style lang="scss">
 	.goodslists{
+		font-size: 32rpx;
 		width:100%;
 		height:0;
 		background-color: #fff;
@@ -559,10 +583,12 @@
 	  height: 100%;
 	  // background-color: red;
 	  display: block;
-	  overflow-y: hidden;
+	  // overflow-y: hidden;
+	  font-size: 0;
 	}
 	
 	.commentareawrap{
+		font-size: 32rpx;
 		width: 100%;
 	  padding-left:24rpx;
 	  padding-right:24rpx;
@@ -606,6 +632,7 @@
 		margin-right: 13rpx;
 	}
 	.input-section{
+		font-size: 32rpx;
 	  position:fixed;
 	  left:0;
 	  right:0;
@@ -665,6 +692,7 @@
 	  // background: #f5f5f5;
 	  background-color: #DF828C !important;
 	  position: relative;
+	  font-size: 32rpx;
 	}
 	live-player{
 	  height:100vh;
