@@ -339,6 +339,7 @@ function onSendMsg(msg, callback) {
 function logout() {
   webim.logout(function (resp) {
     webim.Log.info('登出成功');
+	console.log('logout---ok')
     loginInfo.identifier = null;
     loginInfo.userSig = null;
   })

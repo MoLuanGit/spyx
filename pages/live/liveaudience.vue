@@ -2,8 +2,15 @@
 	<view class="container" @click="hideList">
 		<!-- 直播间 -->
 		<view class="roomright" id="toparea">
-			<live-player id="player" :src="initchunk['play_url'][0]" mode="live" autoplay @statechange="statechange" object-fit="fillCrop"
-			 :picture-in-picture-mode="['push', 'pop']" @error="error" />
+			<!-- <live-player id="player" :src="initchunk['play_url'][0]" mode="live" autoplay @statechange="statechange" object-fit="fillCrop"
+			 :picture-in-picture-mode="['push', 'pop']" @error="error" /> -->
+			 
+			 <swiper class="swiper" :circular="true" :vertical="true" @transition="touchSwiper" @change="changeSwiper" :current="currentIndex">
+				 <swiper-item v-for="(ele,idx) in 3" :key="idx">
+					<live-player id="player" :src="initchunk['play_url'][0]" mode="live" autoplay @statechange="statechange" object-fit="fillCrop"
+					  :picture-in-picture-mode="['push', 'pop']" @error="error" />
+				 </swiper-item>
+			 </swiper>
 			<!-- 顶部信息 -->
 			<view class="roomrttop">
 				<image :src="initchunk['anchor_img']" class="icon-user"></image>
@@ -111,6 +118,7 @@
 	export default {
 		data() {
 			return {
+				currentIndex:0,//
 				goodsNums: 24,
 				showGoodsList: 0,
 				goodsLists: [],
@@ -127,11 +135,9 @@
 				ctx: null,
 				initchunk: {},
 				zanNum: 0,
-				idLists:uni.getStorageSync('idLists'),
+				idLists:uni.getStorageSync('idLists'),//直播id列表
+				idIndex:0,//对于id列表当前索引
 			}
-		},
-		onPageScroll(res) {
-			console.log(11, res)
 		},
 		filters: {
 			numTostr(num) {
@@ -149,7 +155,8 @@
 			let self = this;
 			console.log('idLists',this.idLists)
 			if (options['id']) { // 传ID的方式
-				console.log('111')
+				let idLists = this.idLists;
+				this.idIndex = idLists.indexOf(Number(options['id']));
 				visitChannel(options['id']).then(res => {
 					console.log('直播详情', res);
 					self.prepareData(res.data);
@@ -197,7 +204,80 @@
 			// #endif
 		},
 		methods: {
-
+			//上滑或下滑
+			init(deration){
+				let idIndex = this.idIndex;
+				if(deration == 'up'){
+					if(idIndex == this.idLists.length - 1){
+						idIndex = 0;
+					}else{
+						idIndex += 1;
+					}
+				}else if(deration == 'down'){
+					if(idIndex == 0){
+						idIndex = this.idLists.length - 1
+					}else{
+						idIndex -= 1;
+					}
+				}
+				let id = this.idLists[idIndex];
+				this.idIndex = idIndex;
+				console.log('id',id,this.idLists,idIndex)
+				
+				webimhandler.logout()
+				//先登出上一个连接
+				setTimeout(()=>{
+					this.msgs = [];
+					this.initchunk = {};
+					this.goodsLists = [];
+					this.zanNum = 0;
+					this.userSig = '';
+					this.identifier = '';
+					this.nickName = '';
+					this.avChatRoomId = '';
+					this.sdkappid = '';
+					
+					let self = this;
+					//重新加载直播间
+					visitChannel(id).then(res => {
+						console.log('直播详情', res);
+						self.prepareData(res.data);
+					}).catch(err => {
+						uni.showToast({
+							title: err,
+							icon: 'none',
+							duration: 1000
+						});
+						setTimeout(() => {
+							uni.reLaunch({
+								url: '/pages/live/index'
+							})
+						}, 1000);
+					});
+				},2000)
+				
+				
+			},
+			touchSwiper(e){
+				// console.log(e.detail)
+			},
+			changeSwiper(e){
+				let idx = e.detail.current;
+				if(this.currentIndex == 0 && idx ==2){
+					console.log('下滑')
+					this.init('down')
+				}else if(idx == 0 && this.currentIndex == 2){
+					console.log('上滑')
+					this.init('up')
+				}else if(idx > this.currentIndex){
+					console.log('上滑')
+					this.init('up')
+				}else if(idx < this.currentIndex){
+					console.log('下滑')
+					this.init('down')
+				}
+				this.currentIndex = idx;
+			},
 			//点赞
 			support() {
 				let self = this;
@@ -273,7 +353,9 @@
 						this.nickName = data.nickname //用户名(当前用户昵称，选填)
 						this.sdkappid = data.sdkAppID //填入创建腾讯云通讯应用获取到的 sdkappid
 						this.avChatRoomId = initchunk.im_room_id //互动直播聊天室的群ID
-						self.initIM()
+						if(this.userSig && this.identifier && this.sdkappid && this.avChatRoomId){
+							self.initIM()
+						}
 					}
 				})
 			},
@@ -308,10 +390,7 @@
 			keyboardHeightChange(e) {
 				this.keyboard_height = e.detail.height
 			},
-			//点赞
-			bindTap: function() {
-				webimhandler.sendGroupLoveMsg();
-			},
+
 			//消息数据处理
 			receiveMsgs: function(data) {
 				console.log('receiveMsgs', data);
@@ -336,7 +415,7 @@
 				var that = this;
 				var avChatRoomId = that.avChatRoomId; //聊天群ID
 				var sdkappid = that.sdkappid; //创建通讯云通信获取到的sdkappid
-
+				
 				//初始化信息
 				webimhandler.init({
 					accountMode: 0, //帐号模式，0-表示独立模式，1-表示托管模式(已停用，仅作为演示)
@@ -347,7 +426,7 @@
 					selToID: avChatRoomId, //群聊id
 					selSess: null //当前聊天会话
 				});
-
+				console.log('sdkappid---',sdkappid)
 				//当前用户身份
 				var loginInfo = {
 					'sdkAppID': sdkappid, //用户所属应用id,必填
@@ -706,6 +785,10 @@
 		background-color: #DF828C !important;
 		position: relative;
 		font-size: 32rpx;
+		
+		.swiper{
+			height:100%;
+		}
 	}
 
 	live-player {
