@@ -1,34 +1,31 @@
 <template>
 	<view class="container" @click="hideList">
-		<view id="toparea" class="flex">
-		  <!-- 直播间 -->
-		  <view class="roomright">
-		     <live-player 
-		      id="player" 
-		      :src="initchunk['play_url'][0]" 
-		      mode="live"
-		      autoplay
-		      @statechange="statechange" 
-		      object-fit="fillCrop" 
-		      :picture-in-picture-mode="['push', 'pop']"
-		      @error="error" />
-		    <!-- 顶部信息 -->
-		    <view class="roomrttop">
-		      <image :src="initchunk['anchor_img']" class="icon-user"></image>
-		      <view class="infor">
-		        <view class="name">{{initchunk['anchor_name']}}</view>
-		        <view class="num">1.6万本场点赞</view>
-		      </view>
-			  <view class="btn" @click="toFocus" v-if="initchunk['is_focus'] == 0">
-			  	关注
-			  </view>
-			  <view class="btn" v-else>
-			  	已关注
-			  </view>
+		<!-- 直播间 -->
+		<view class="roomright" id="toparea">
+		   <live-player 
+		    id="player" 
+		    :src="initchunk['play_url'][0]" 
+		    mode="live"
+		    autoplay
+		    @statechange="statechange" 
+		    object-fit="fillCrop" 
+		    :picture-in-picture-mode="['push', 'pop']"
+		    @error="error" />
+		  <!-- 顶部信息 -->
+		  <view class="roomrttop">
+		    <image :src="initchunk['anchor_img']" class="icon-user"></image>
+		    <view class="infor">
+		      <view class="name">{{initchunk['anchor_name']}}</view>
+		      <view class="num">1.6万本场点赞</view>
 		    </view>
-		    
+					  <view class="btn" @click="toFocus" v-if="initchunk['is_focus'] == 0">
+					  	关注
+					  </view>
+					  <view class="btn" v-else>
+					  	已关注
+					  </view>
 		  </view>
-		  <!-- end -->
+		  
 		</view>
 		
 		<!-- 底部信息 -->
@@ -58,7 +55,7 @@
 		    	<view class="btn-car btn-car1" @click.stop="showGoods">
 		    	  <image class="icon-car" src="/static/images/car1.png"></image>
 		    	</view>
-		    	<view class="btn-car btn-car2">
+		    	<view class="btn-car btn-car2" @click="support">
 		    	  <image class="icon-car" src="/static/images/zanroom1.png"></image>
 		    	</view>
 		    	<view class="btn-car btn-car3" @click="logout">
@@ -136,51 +133,7 @@
 			return {
 				goodsNums:24,
 				showGoodsList:0,
-				goodsLists:[
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':1,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':0,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':0,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':0,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':0,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':1,
-					// },
-					// {
-					// 	'image':'/static/images/bargainBg.jpg',
-					// 	'price':123.8,
-					// 	'goodsname':'好波内衣女春夏新款无钢圈',
-					// 	'is_ing':0,
-					// },
-				],
-				title:'超级购物台',
+				goodsLists:[],
 				commentareaH: 255, //下面高度
 				userSig: '',
 				identifier: '',
@@ -190,53 +143,9 @@
 				//input输入
 				msgContent: "",
 				isMsgContent: false,
-				msgs: [
-					// {
-					// 	'fromAccountNick':'zs',
-					// 	'content':'玩哈哈哈，哇哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈13哈哈哈哈哈哈',
-					// },
-					// {
-					// 	'fromAccountNick':'ls',
-					// 	'content':'22',
-					// },
-					// {
-					// 	'fromAccountNick':'ww',
-					// 	'content':'有意所哦和有三亚房价是阿斯顿法国红酒看来',
-					// },
-					// {
-					// 	'fromAccountNick':'zs',
-					// 	'content':'11',
-					// },
-					// {
-					// 	'fromAccountNick':'ls',
-					// 	'content':'22',
-					// },
-					// {
-					// 	'fromAccountNick':'ww',
-					// 	'content':'有意所以',
-					// },
-				],
+				msgs: [],
 				ctx:null,
-				initchunk:{
-					// 'cover':'/static/images/bargainBg.jpg',
-					// 'title':'冬日温暖，贴身舒适',
-					// 'play_url':[
-					// 	'',
-					// ],
-					// 'employee':{
-					// 	'nickname':'直播柚子酱',
-					// 	'avatar':'/static/images/bargainBg.jpg',
-					// },
-					// 'goods':{
-					// 	list:[{
-					// 		'image':'/static/images/address.png'
-					// 	},
-					// 	{
-					// 		'image':'/static/images/address.png'
-					// 	}],
-					// 	count:23
-					// }
-				},
+				initchunk:{},
 			}
 		},
 		onLoad: function(options) {
@@ -246,7 +155,7 @@
 		    if(options['id']){ // 传ID的方式
 				console.log('111')
 		        visitChannel(options['id']).then(res => {
-		            console.log(res);
+		            console.log('直播详情',res);
 		            self.prepareData(res.data);
 		        }).catch(err=>{
 					uni.showToast({
@@ -292,13 +201,22 @@
 			// #endif
 		},
 		methods:{
+			//点赞
+			support(){
+				
+			},
 			//点击底部x按钮
 			logout(){
-				
+				uni.reLaunch({
+					url:'/pages/live/index'
+				})
 			},
 			//去抢购
 			toBuy(product_id){
 				console.log('product_id',product_id)
+				uni.navigateTo({
+					url:`/pages/goods_details/index?id=${product_id}`
+				})
 			},
 			//关注主播
 			toFocus(){
@@ -396,23 +314,18 @@
 			    console.error('live-player error:', e.detail.errMsg)
 			},
 			init() {
-			    let _this = this;
-			    uni.getSystemInfo({
-			        success: res => {
-			            let window_H = res.windowHeight;
-			            var query = uni.createSelectorQuery();
-			            let commentareaH
-			            query.select('#toparea').boundingClientRect(res => {
-			                commentareaH = window_H - res.height
-			            }).exec();
-			            query.select('#toptitarea').boundingClientRect(res => {
-			                commentareaH = commentareaH - res.height - 10
-			                _this.setData({
-			                    "commentareaH": commentareaH
-			                })
-			            }).exec();
-			        }
-			    })
+			    // let _this = this;
+			    // uni.getSystemInfo({
+			    //     success: res => {
+			    //         let window_H = res.windowHeight;
+			    //         var query = uni.createSelectorQuery();
+			    //         let commentareaH
+			    //         query.select('#toparea').boundingClientRect(res => {
+			    //             commentareaH = window_H - res.height
+							// console.log('commentareaH',commentareaH)
+			    //         }).exec();
+			    //     }
+			    // })
 			},
 			//初始化IM
 			initIM: function() {
@@ -641,18 +554,12 @@
 			}
 		}
 	}
-	.container{
-		min-height: 100vh;
-	}
-	page{
-	  min-height: 100vh;
-	}
-	.flex{display:flex }
-	.flex-1{flex:1}
-	::-webkit-scrollbar{
-	  width: 0;
-	  height: 0;
-	  color: transparent;
+
+	page,.container{
+	  height: 100%;
+	  // background-color: red;
+	  display: block;
+	  overflow-y: hidden;
 	}
 	
 	.commentareawrap{
@@ -753,7 +660,7 @@
 	}
 	
 	.roomright{
-	  height:100vh;
+	  height:100%;
 	  width:750rpx;
 	  // background: #f5f5f5;
 	  background-color: #DF828C !important;

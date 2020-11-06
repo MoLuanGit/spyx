@@ -64,7 +64,7 @@
 			        </block>
 			        
 			        <view class="pic-small-tips">
-			          <view class="text">{{item['goods']['count']}}件</view>
+			          <view class="text">{{item['channel_products'].length}}件</view>
 			          <view class="text">直播购</view>
 			        </view>
 			      </view>
@@ -206,10 +206,10 @@
 			// 直播
 			getlivelist() {
 				// if(!this.isScroll) return
-				console.log('111')
+				
 				livelist(this.page, this.limit)
 					.then(res => {
-						console.log(res.data)
+						console.log('直播',res.data)
 						// this.isScroll = res.data.length>=this.limit
 						// this.page++
 						this.livelistdata = res.data
