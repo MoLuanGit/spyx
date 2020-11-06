@@ -127,72 +127,7 @@
 				isGoIndex: false,
 				isShowAuth: false,
 				isAuto: false,
-				livelistdata: {
-					// "banner_list":[
-					// 	{
-					// 		"image":'/static/images/bargainBg.jpg',
-					// 		'url':'pages/index/index',
-					// 	},
-					// 	{
-					// 		"image":'/static/images/bargainBg.jpg',
-					// 	},
-					// ],
-					// 'living_list':[
-					// 	{
-					// 		'cover':'/static/images/bargainBg.jpg',
-					// 		'title':'冬日温暖，贴身舒适',
-					// 		'employee':{
-					// 			'nickname':'直播柚子酱'
-					// 		},
-					// 		'goods':{
-					// 			list:[{
-					// 				'image':'/static/images/address.png'
-					// 			},
-					// 			{
-					// 				'image':'/static/images/address.png'
-					// 			}],
-					// 			count:23
-					// 		}
-					// 	},
-					// 	{
-					// 		'cover':'/static/images/bargainBg.jpg',
-					// 		'title':'冬日温暖，贴身舒适',
-					// 		'employee':{
-					// 			'nickname':'直播柚子酱'
-					// 		},
-					// 		'goods':{
-					// 			list:[{
-					// 				'image':'/static/images/address.png'
-					// 			}],
-					// 			count:23
-					// 		}
-					// 	},
-					// ],
-					// 'subscribe_list':[
-					// 	{
-					// 		'cover':'/static/images/bargainBg.jpg',
-					// 		"title":'高端品牌专场-买手推荐',
-					// 		'employee':{
-					// 			'nickname':'直播公子李'
-					// 		},
-					// 		'open_time':'3月20日  10:00开播',
-					// 		'is_subscribe':0,
-					// 		'channel_id':1,
-					// 	},
-					// 	{
-					// 		'cover':'/static/images/bargainBg.jpg',
-					// 		"title":'高端品牌专场-买手推荐',
-					// 		'employee':{
-					// 			'nickname':'直播公子李'
-					// 		},
-					// 		'open_time':'3月20日  10:00开播',
-					// 		'is_subscribe':1,
-					// 	},
-					// ],
-				},
-				// page:1,
-				// limit:10,
-				// isScroll:true,
+				livelistdata: {},
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -205,11 +140,6 @@
 		filters:{
 			numTostr(num){
 				let res;
-				// if(num < 9999){
-				// 	res = num;
-				// }else{
-				// 	res = Math.floor(num/10000) + '.' + num % 10000
-				// }
 				res = num < 9999 ? num : Math.floor(num/10000) + '.' + num % 10000 + 'w';
 				return res
 			}
@@ -219,16 +149,17 @@
 			getlivelist() {
 				// if(!this.isScroll) return
 				
-				livelist(this.page, this.limit)
-					.then(res => {
-						console.log('直播',res.data)
-						// this.isScroll = res.data.length>=this.limit
-						// this.page++
-						this.livelistdata = res.data
+				livelist().then(res => {
+					console.log('直播',res.data)
+					this.livelistdata = res.data
+					let idLists = res.data.living_list.map(item=>{
+						return item.id
 					})
-					.catch(res => {
-						console.log(res.msg);
-					});
+					uni.setStorageSync('idLists',idLists)
+				})
+				.catch(res => {
+					console.log(res.msg);
+				});
 			},
 			liveaudience(e) {
 			    let id = e.currentTarget.dataset['id']
