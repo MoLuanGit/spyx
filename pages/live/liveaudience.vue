@@ -6,7 +6,7 @@
 			 :picture-in-picture-mode="['push', 'pop']" @error="error" /> -->
 			 
 			 <swiper class="swiper" :circular="true" :vertical="true" @transition="touchSwiper" @change="changeSwiper" :current="currentIndex">
-				 <swiper-item v-for="(ele,idx) in 3" :key="idx">
+				 <swiper-item v-for="(ele,idx) in 2" :key="idx">
 					<live-player id="player" :src="initchunk['play_url'][0]" mode="live" autoplay @statechange="statechange" object-fit="fillCrop"
 					  :picture-in-picture-mode="['push', 'pop']" @error="error" />
 				 </swiper-item>
@@ -142,11 +142,6 @@
 		filters: {
 			numTostr(num) {
 				let res;
-				// if(num < 9999){
-				// 	res = num;
-				// }else{
-				// 	res = Math.floor(num/10000) + '.' + num % 10000
-				// }
 				res = num < 9999 ? num : Math.floor(num / 10000) + '.' + num % 10000 + 'w';
 				return res
 			}
@@ -225,17 +220,18 @@
 				console.log('id',id,this.idLists,idIndex)
 				
 				webimhandler.logout()
+				
+				this.msgs = [];
+				this.initchunk = {};
+				this.goodsLists = [];
+				this.zanNum = 0;
+				this.userSig = '';
+				this.identifier = '';
+				this.nickName = '';
+				this.avChatRoomId = '';
+				this.sdkappid = '';
 				//先登出上一个连接
 				setTimeout(()=>{
-					this.msgs = [];
-					this.initchunk = {};
-					this.goodsLists = [];
-					this.zanNum = 0;
-					this.userSig = '';
-					this.identifier = '';
-					this.nickName = '';
-					this.avChatRoomId = '';
-					this.sdkappid = '';
 					
 					let self = this;
 					//重新加载直播间
@@ -263,18 +259,12 @@
 			},
 			changeSwiper(e){
 				let idx = e.detail.current;
-				if(this.currentIndex == 0 && idx ==2){
+				if(this.currentIndex == 0 && idx ==1){
 					console.log('下滑')
 					this.init('down')
-				}else if(idx == 0 && this.currentIndex == 2){
+				}else if(idx == 0 && this.currentIndex == 1){
 					console.log('上滑')
 					this.init('up')
-				}else if(idx > this.currentIndex){
-					console.log('上滑')
-					this.init('up')
-				}else if(idx < this.currentIndex){
-					console.log('下滑')
-					this.init('down')
 				}
 				this.currentIndex = idx;
 			},

@@ -183,7 +183,9 @@ export function bindingPhone(data){
   return request.post('binding',data, { noAuth : true });
 }
 
-
+export function auth_bindind_phone(data){
+	return request.post('v2/auth_bindind_phone',data, { noAuth : true });
+}
 
 /**
  * 绑定手机号

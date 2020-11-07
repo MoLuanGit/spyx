@@ -47,7 +47,14 @@
 								<image src="/static/images/edit.png" mode=""></image>
 							</view>
 						</view>
+
+						<!-- #ifdef H5 -->
 						<view class="phone" v-if="!userInfo.phone && isLogin" @tap="bindPhone">绑定手机号</view>
+						<!-- #endif -->
+						<!-- #ifdef MP -->
+						<button open-type="getPhoneNumber" class="phone1" v-if="!userInfo.phone && isLogin" @getphonenumber="bindPhone">绑定手机号</button>
+						<!-- #endif -->
+
 					</view>
 				</view>
 				<!-- #ifdef MP -->
@@ -149,7 +156,12 @@
 		setVisit,
 		updateUserInfo
 	} from '@/api/user.js';
-	import { wechatAuthV2 } from '@/api/public.js'
+	import {
+		auth_bindind_phone
+	} from '@/api/api.js';
+	import {
+		wechatAuthV2
+	} from '@/api/public.js'
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -223,9 +235,9 @@
 			}
 			// #endif
 			// #ifdef H5
-			if(options.code){
+			if (options.code) {
 				let spread = app.globalData.spid ? app.globalData.spid : '';
-				wechatAuthV2(options.code,spread).then(res=>{
+				wechatAuthV2(options.code, spread).then(res => {
 					location.href = decodeURIComponent(
 						decodeURIComponent(options.back_url)
 					)
@@ -294,10 +306,35 @@
 				this.isShowAuth = e
 			},
 			// 绑定手机
-			bindPhone() {
+			bindPhone(e) {
+				//#ifdef H5
 				uni.navigateTo({
 					url: '/pages/users/user_phone/index'
 				})
+				//#endif
+				//#ifdef MP
+				let self = this;
+					console.log(e.detail)
+					let iv = e.detail.iv;
+					let encryptedData = e.detail.encryptedData;
+					uni.login({
+					  provider: 'weixin',
+					  success: function (loginRes) {
+						let code = loginRes.code;
+					    console.log(loginRes,111,iv,encryptedData,code);
+						
+						auth_bindind_phone({
+							code:code,
+							iv,
+							encryptedData,
+						}).then(res=>{
+							console.log(res)
+							self.getUserInfo();
+						})
+					  }
+					});
+				//#endif
+				
 			},
 			/**
 			 * 获取个人用户信息
@@ -345,7 +382,7 @@
 			goEdit() {
 				if (this.isLogin == false) {
 					toLogin();
-				}else{
+				} else {
 					uni.navigateTo({
 						url: '/pages/users/user_info/index'
 					})
@@ -648,6 +685,13 @@
 
 		.phone {
 			color: #fff;
+		}
+
+		.phone1 {
+			background-color: rgba(0, 0, 0, 0);
+			text-align: left;
+			color: #fff;
+			font-size: 28rpx;
 		}
 
 		.order-status-num {

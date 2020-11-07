@@ -74,6 +74,7 @@
 				this.isShowAuth = e
 			},
 			editPwd: function() {
+				console.log(111)
 				let that = this;
 				if (!that.phone) return that.$util.Tips({
 					title: '请填写手机号码！'
