@@ -7,7 +7,7 @@
 			 
 			 <swiper class="swiper" :circular="true" :vertical="true" @transition="touchSwiper" @change="changeSwiper" :current="currentIndex">
 				 <swiper-item v-for="(ele,idx) in 2" :key="idx">
-					<live-player id="player" :src="initchunk['play_url'][0]" mode="live" autoplay @statechange="statechange" object-fit="fillCrop"
+					<live-player id="player" :src="initchunk['play_url'][0]" mode="live" :autoplay="currentIndex == idx ? true : false" @statechange="statechange" object-fit="fillCrop"
 					  :picture-in-picture-mode="['push', 'pop']" @error="error" />
 				 </swiper-item>
 			 </swiper>
