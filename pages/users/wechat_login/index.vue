@@ -41,7 +41,8 @@
 		getLogo,
 		silenceAuth,
 		getUserPhone,
-		wechatAuthV2
+		wechatAuthV2,
+		login
 	} from '@/api/public';
 	import {
 		LOGO_URL,
@@ -225,15 +226,34 @@
 				});
 			},
 			setUserInfo(e) {
-				uni.showLoading({ title: '正在登录中' });
-				uni.setStorageSync('routineType',0)
-				Routine.getCode()
-					.then(code => {
-						this.getWxUser(code);
-					})
-					.catch(res => {
-						uni.hideLoading();
-					});
+				console.log('e',e.detail)
+				let {encryptedData,iv} = e.detail;
+				uni.login({
+				  provider: 'weixin',
+				  success: (loginRes)=>{
+					let code = loginRes.code;
+				    console.log(loginRes,111,iv,encryptedData,code);
+					// login({
+					// 	code,
+					// 	iv,
+					// 	encryptedData,
+					// }).then(res=>{
+					// 	console.log('res',res)
+						
+					// })
+					
+					uni.showLoading({ title: '正在登录中' });
+					uni.setStorageSync('routineType',0)
+					Routine.getCode()
+						.then(code => {
+							this.getWxUser(code);
+						})
+						.catch(res => {
+							uni.hideLoading();
+						});
+				  }
+				});
+				
 			},
 			getWxUser(code){
 				let self = this
