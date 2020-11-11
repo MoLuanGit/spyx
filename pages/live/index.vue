@@ -199,13 +199,13 @@
 			            messagetips(channelid).then(result => {
 			                // 获取当前点击下标    
 			                let Index = e.currentTarget.dataset.index;
-			                let list = self.data.livelistdata.subscribe_list;
+			                let list = self.livelistdata.subscribe_list;
 			    
 			                list[Index].is_subscribe = 1;
-			                let livelistdata = self.data.livelistdata;
+			                let livelistdata = self.livelistdata;
 			                livelistdata.subscribe_list = list;
 							self.livelistdata = livelistdata
-			                // console.log(self.data.livelistdata);
+			                // console.log(self.livelistdata);
 							uni.showToast({
 								title: result.msg,
 								icon: 'none',
